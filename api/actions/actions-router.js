@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    console.log(`${req.method} to ${req.originalUrl}`);
     const actions = await actionsModel.get();
     res.status(200).json(actions);
   } catch (error) {
@@ -19,7 +18,6 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   try {
-    console.log(`${req.method} to ${req.originalUrl} with ID: ${id}`);
     const action = await actionsModel.get(id);
 
     if (action) {
@@ -34,10 +32,9 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', validateAction, async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const { project_id, description, notes } = req.body;
   try {
-    console.log(`${req.method} to ${req.originalUrl}`);
     const projectExists = await projectsModel.get(project_id);
     if (projectExists) {
       if (description && notes && description.trim() && notes.trim()) {
@@ -61,7 +58,6 @@ router.post('/', validateAction, async (req, res, next) => {
 router.put('/:id', validateAction, async (req, res, next) => {
   const { id } = req.params;
   try {
-    console.log(`${req.method} to ${req.originalUrl} with ID: ${id}`);
     const actionExists = await actionsModel.get(id);
     if (actionExists) {
       const updatedAction = await actionsModel.update(id, req.body);
@@ -79,7 +75,6 @@ router.put('/:id', validateAction, async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   const { id } = req.params;
   try {
-    console.log(`${req.method} to ${req.originalUrl} with ID: ${id}`);
     const actionToDelete = await actionsModel.remove(id);
 
     if (actionToDelete) {
@@ -94,8 +89,7 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-router.use((error, req, res, next) => {
-  // eslint-disable-line
+router.use((error, req, res, next) => { // eslint-disable-line
   res.status(error.status || 500).json({
     customMessage: 'Something bad happened in the actions router',
     message: error.message,
