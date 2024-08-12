@@ -45,7 +45,7 @@ router.post('/', async (req, res, next) => {
       res.status(201).json(newProject);
     } else {
       res.status(400).json({
-        message: 'Creating a new project requires the name and description',
+        message: 'Bad Request - Creating a new project requires the name and description',
       });
     }
   } catch (error) {
@@ -71,7 +71,7 @@ router.put('/:id', async (req, res, next) => {
       }
     } else {
       res.status(400).json({
-        message: 'Creating a new project requires the name and description',
+        message: 'Bad Request - Updating a project requires the name and description',
       });
     }
   } catch (error) {
