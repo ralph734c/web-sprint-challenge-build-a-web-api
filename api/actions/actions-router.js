@@ -2,6 +2,7 @@
 const express = require('express');
 const actionsModel = require('./actions-model');
 const projectsModel = require('../projects/projects-router');
+const { validateAction } = require('./actions-middlware');
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateAction, async (req, res, next) => {
   const { project_id, description, notes } = req.body;
   try {
     console.log(`${req.method} to ${req.originalUrl}`);
@@ -44,8 +45,8 @@ router.post('/', async (req, res, next) => {
         res.status(201).json(newAction);
       } else {
         res.status(400).json({
-          message: 'Bad Request - A description and notes are required.'
-        })
+          message: 'Bad Request - A description and notes are required.',
+        });
       }
     } else {
       res.status(404).json({
@@ -57,24 +58,17 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateAction, async (req, res, next) => {
   const { id } = req.params;
-  const { project_id, description, notes } = req.body;
   try {
     console.log(`${req.method} to ${req.originalUrl} with ID: ${id}`);
-    const projectExists = await projectsModel.get(project_id);
-    if (projectExists) {
-      if (description && notes && description.trim() && notes.trim()) {
-        const updatedAction = await actionsModel.update(id, req.body);
-        res.status(200).json(updatedAction);
-      } else {
-        res.status(400).json({
-          message: 'Bad Request - A description and notes are required.'
-        })
-      }
+    const actionExists = await actionsModel.get(id);
+    if (actionExists) {
+      const updatedAction = await actionsModel.update(id, req.body);
+      res.status(200).json(updatedAction);
     } else {
       res.status(404).json({
-        message: `A project with ID ${project_id} doesn't exist and an existing project is required to update an action`,
+        message: `An action with ID ${id} could not be found`,
       });
     }
   } catch (error) {
@@ -100,7 +94,8 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-router.use((error, req, res, next) => { // eslint-disable-line
+router.use((error, req, res, next) => {
+  // eslint-disable-line
   res.status(error.status || 500).json({
     customMessage: 'Something bad happened in the actions router',
     message: error.message,

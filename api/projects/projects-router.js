@@ -45,7 +45,8 @@ router.post('/', async (req, res, next) => {
       res.status(201).json(newProject);
     } else {
       res.status(400).json({
-        message: 'Bad Request - Creating a new project requires the name and description',
+        message:
+          'Bad Request - Creating a new project requires the name and description',
       });
     }
   } catch (error) {
@@ -58,9 +59,15 @@ router.put('/:id', async (req, res, next) => {
     console.log(
       `${req.method} to ${req.originalUrl} with ID: ${req.params.id}`
     );
-    const { name, description } = req.body;
+    const { name, description, completed } = req.body;
     const id = req.params.id;
-    if (name && description && name.trim() && description.trim()) {
+    if (
+      name &&
+      description &&
+      typeof completed === 'boolean' &&
+      name.trim() &&
+      description.trim()
+    ) {
       const updatedProject = await projectsModel.update(id, req.body);
       if (updatedProject) {
         res.status(201).json(updatedProject);
@@ -71,7 +78,8 @@ router.put('/:id', async (req, res, next) => {
       }
     } else {
       res.status(400).json({
-        message: 'Bad Request - Updating a project requires the name and description',
+        message:
+          'Bad Request - Updating a project requires the name, description, and completed values',
       });
     }
   } catch (error) {
@@ -118,7 +126,8 @@ router.get('/:id/actions', async (req, res, next) => {
   }
 });
 
-router.use((error, req, res, next) => { // eslint-disable-line
+router.use((error, req, res, next) => {
+  // eslint-disable-line
   res.status(error.status || 500).json({
     customMessage: 'Something bad happened in the projects router',
     message: error.message,
