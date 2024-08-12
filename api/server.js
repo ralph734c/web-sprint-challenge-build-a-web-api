@@ -1,5 +1,6 @@
 const express = require('express');
 const server = express();
+const projectsRouter = require('./projects/projects-router');
 
 // Configure your server here
 // Build your actions router in /api/actions/actions-router.js
@@ -8,8 +9,10 @@ const server = express();
 
 server.use(express.json());
 
+server.use('/api/projects', projectsRouter);
+
 server.get('/', (req, res) => {
-  res.send(`<h2>Let's wire up these APIs, routes, and middleware!</h2>`)
-})
+  res.send(`<h2>Let's wire up these APIs, routes, and middleware!</h2>`);
+});
 
 module.exports = server;
